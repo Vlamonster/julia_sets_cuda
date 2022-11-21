@@ -132,6 +132,11 @@ int main(int argc, char *argv[]) {
     // bring back data
     cudaMemcpy(h_colors, d_colors, width * height * 3 * sizeof(char), cudaMemcpyDeviceToHost);
 
+    cudaFree(d_coords);
+    cudaFree(d_steps);
+    cudaFree(d_colors);
+    cudaFree(d_color_map);
+
     // create image
     bitmap_image image(width, height);
 
@@ -141,6 +146,8 @@ int main(int argc, char *argv[]) {
             image.set_pixel(x, y, h_colors[idx], h_colors[idx + 1], h_colors[idx + 2]);
         }
     }
+
+    free(h_colors);
 
     image.save_image("output.bmp");
 
