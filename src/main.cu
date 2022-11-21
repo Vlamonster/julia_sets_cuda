@@ -30,14 +30,14 @@ int main(int argc, char *argv[]) {
     float right = 2.1;
 
     char opt;
-    while ((opt = getopt(argc, argv, "w:h:x:y:i:t:b:l:r:")) != -1) {
+    while ((opt = (char) getopt(argc, argv, "w:h:x:y:i:t:b:l:r:")) != -1) {
         switch (opt) {
             case 'w': {
-                width = (int) strtol(optarg, nullptr, 10);
+                width = stoi(optarg, nullptr, 10);
                 break;
             }
             case 'h': {
-                height = (int) strtol(optarg, nullptr, 10);
+                height = stoi(optarg, nullptr, 10);
                 break;
             }
             case 'x': {
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
                 break;
             }
             case 'i': {
-                iterations = strtol(optarg, nullptr, 10);
+                iterations = stoi(optarg, nullptr, 10);
                 break;
             }
             case 't': {
