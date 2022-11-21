@@ -62,10 +62,6 @@ setColors(const int *d_steps,
 
         int steps = d_steps[ids];
 
-        d_colors[idc] = steps;
-        d_colors[idc + 1] = steps;
-        d_colors[idc + 2] = steps;
-
         if (steps == -1){
             d_colors[idc] = 0;
             d_colors[idc + 1] = 0;
