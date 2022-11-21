@@ -52,19 +52,19 @@ int main(int argc, char *argv[]) {
                 break;
             }
             case 't': {
-                top = strtol(optarg, nullptr, 10);
+                top = strtof(optarg, nullptr);
                 break;
             }
             case 'b': {
-                bottom = strtol(optarg, nullptr, 10);
+                bottom = strtof(optarg, nullptr);
                 break;
             }
             case 'l': {
-                left = strtol(optarg, nullptr, 10);
+                left = strtof(optarg, nullptr);
                 break;
             }
             case 'r': {
-                right = strtol(optarg, nullptr, 10);
+                right = strtof(optarg, nullptr);
                 break;
             }
             default: {
