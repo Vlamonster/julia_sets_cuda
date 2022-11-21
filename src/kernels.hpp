@@ -1,23 +1,24 @@
 __global__ void
 iterateCoordinates(float *d_coords,
                    int *d_steps,
-                   const long width,
-                   const long height,
-                   const float c_x,
-                   const float c_y,
-                   const long iteration);
+                   int width,
+                   int height,
+                   float c_x,
+                   float c_y,
+                   int iteration);
 
 __global__ void
 initializeCoords(float *d_coords,
-                 const long width,
-                 const long height,
-                 const float top,
-                 const float bottom,
-                 const float left,
-                 const float right);
+                 int width,
+                 int height,
+                 float top,
+                 float bottom,
+                 float left,
+                 float right);
 
 __global__ void
 setColors(const int *d_steps,
-          char *d_colors,
-          const long width,
-          const long height);
+          unsigned char *d_colors,
+          const unsigned char *d_color_map,
+          int width,
+          int height);

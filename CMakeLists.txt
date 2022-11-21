@@ -5,6 +5,8 @@ project(julia_sets LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -march=native")
 
+configure_file(color_maps/custom.txt color_maps/custom.txt COPYONLY)
+
 set(DEFAULT_SOURCES
         src/main.cu src/main.hpp
         src/bitmap_image.hpp)

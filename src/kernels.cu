@@ -3,11 +3,11 @@
 __global__ void
 iterateCoordinates(float *d_coords,
                    int *d_steps,
-                   const long width,
-                   const long height,
+                   const int width,
+                   const int height,
                    const float c_x,
                    const float c_y,
-                   const long iteration) {
+                   const int iteration) {
     unsigned int idx = threadIdx.x + blockIdx.x * blockDim.x;
     unsigned int idy = threadIdx.y + blockIdx.y * blockDim.y;
 
@@ -18,7 +18,7 @@ iterateCoordinates(float *d_coords,
         float y = d_coords[idc + 1];
 
         // check if escaped
-        if (d_steps[ids] == 0) {
+        if (d_steps[ids] == -1) {
             if (x * x + y * y > 4) {
                 d_steps[ids] = iteration;
             } else {
@@ -31,8 +31,8 @@ iterateCoordinates(float *d_coords,
 
 __global__ void
 initializeCoords(float *d_coords,
-                 const long width,
-                 const long height,
+                 const int width,
+                 const int height,
                  const float top,
                  const float bottom,
                  const float left,
@@ -49,17 +49,32 @@ initializeCoords(float *d_coords,
 
 __global__ void
 setColors(const int *d_steps,
-          char *d_colors,
-          const long width,
-          const long height) {
+          unsigned char *d_colors,
+          const unsigned char *d_color_map,
+          const int width,
+          const int height) {
     unsigned int idx = threadIdx.x + blockIdx.x * blockDim.x;
     unsigned int idy = threadIdx.y + blockIdx.y * blockDim.y;
 
     if (idx < width && idy < height) {
         unsigned int ids = idy * width + idx;
         unsigned int idc = ids * 3;
-        d_colors[idc] = d_steps[ids];
-        d_colors[idc + 1] = d_steps[ids];
-        d_colors[idc + 2] = d_steps[ids];
+
+        int steps = d_steps[ids];
+
+        d_colors[idc] = steps;
+        d_colors[idc + 1] = steps;
+        d_colors[idc + 2] = steps;
+
+        if (steps == -1){
+            d_colors[idc] = 0;
+            d_colors[idc + 1] = 0;
+            d_colors[idc + 2] = 0;
+        } else {
+            d_colors[idc] = d_color_map[steps * 3];
+            d_colors[idc + 1] = d_color_map[steps * 3 + 1];
+            d_colors[idc + 2] = d_color_map[steps * 3 + 2];
+        }
+
     }
 }
