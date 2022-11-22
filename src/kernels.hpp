@@ -22,3 +22,18 @@ setColors(const int *d_steps,
           const unsigned char *d_color_map,
           int width,
           int height);
+
+__global__ void
+combinedKernel(const float *d_coords,
+               int *d_steps,
+               const int width,
+               const int height,
+               const float c_x,
+               const float c_y,
+               const int iterations,
+               unsigned char *d_colors,
+               const unsigned char *d_color_map,
+               const float top,
+               const float bottom,
+               const float left,
+               const float right);

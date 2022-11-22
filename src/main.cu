@@ -101,31 +101,46 @@ int main(int argc, char *argv[]) {
     dim3 grid((width + 32 - 1) / 32, (height + 32 - 1) / 32);
     dim3 block(32, 32);
 
-    initializeCoords<<<grid, block>>>(d_coords,
-                                      width,
-                                      height,
-                                      top,
-                                      bottom,
-                                      left,
-                                      right);
+//    initializeCoords<<<grid, block>>>(d_coords,
+//                                      width,
+//                                      height,
+//                                      top,
+//                                      bottom,
+//                                      left,
+//                                      right);
 
     // run main loop
-    iterateCoordinates<<<grid, block>>>(d_coords,
-                                        d_steps,
-                                        width,
-                                        height,
-                                        c_x,
-                                        c_y,
-                                        iterations);
+//    iterateCoordinates<<<grid, block>>>(d_coords,
+//                                        d_steps,
+//                                        width,
+//                                        height,
+//                                        c_x,
+//                                        c_y,
+//                                        iterations);
+
+    cudaMemcpy(d_color_map, h_color_map.data(), 256 * 3 * sizeof(unsigned char), cudaMemcpyHostToDevice);
+    combinedKernel<<<grid, block>>>(d_coords,
+                                    d_steps,
+                                    width,
+                                    height,
+                                    c_x,
+                                    c_y,
+                                    iterations,
+                                    d_colors,
+                                    d_color_map,
+                                    top,
+                                    bottom,
+                                    left,
+                                    right);
 
 
     // apply color
-    cudaMemcpy(d_color_map, h_color_map.data(), 256 * 3 * sizeof(unsigned char), cudaMemcpyHostToDevice);
-    setColors<<<grid, block>>>(d_steps,
-                               d_colors,
-                               d_color_map,
-                               width,
-                               height);
+//    cudaMemcpy(d_color_map, h_color_map.data(), 256 * 3 * sizeof(unsigned char), cudaMemcpyHostToDevice);
+//    setColors<<<grid, block>>>(d_steps,
+//                               d_colors,
+//                               d_color_map,
+//                               width,
+//                               height);
 
     // bring back data
     cudaMemcpy(h_colors, d_colors, width * height * 3 * sizeof(char), cudaMemcpyDeviceToHost);
