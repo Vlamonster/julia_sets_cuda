@@ -84,16 +84,12 @@ int main(int argc, char *argv[]) {
         h_color_map.push_back(c);
     }
 
-    char *h_colors = (char *) malloc(width * height * 3 * sizeof(char));
+    auto *h_colors = (unsigned char *) malloc(width * height * 3 * sizeof(char));
 
     // allocate device memory
-    float *d_coords;
-    int *d_steps;
     unsigned char *d_colors;
     unsigned char *d_color_map;
 
-    cudaMalloc(&d_coords, width * height * 2 * sizeof(float));
-    cudaMalloc(&d_steps, width * height * sizeof(int));
     cudaMalloc(&d_colors, width * height * 3 * sizeof(unsigned char));
     cudaMalloc(&d_color_map, 256 * 3 * sizeof(unsigned char));
 
@@ -101,27 +97,9 @@ int main(int argc, char *argv[]) {
     dim3 grid((width + 32 - 1) / 32, (height + 32 - 1) / 32);
     dim3 block(32, 32);
 
-//    initializeCoords<<<grid, block>>>(d_coords,
-//                                      width,
-//                                      height,
-//                                      top,
-//                                      bottom,
-//                                      left,
-//                                      right);
-
-    // run main loop
-//    iterateCoordinates<<<grid, block>>>(d_coords,
-//                                        d_steps,
-//                                        width,
-//                                        height,
-//                                        c_x,
-//                                        c_y,
-//                                        iterations);
 
     cudaMemcpy(d_color_map, h_color_map.data(), 256 * 3 * sizeof(unsigned char), cudaMemcpyHostToDevice);
-    combinedKernel<<<grid, block>>>(d_coords,
-                                    d_steps,
-                                    width,
+    combinedKernel<<<grid, block>>>(width,
                                     height,
                                     c_x,
                                     c_y,
@@ -133,20 +111,10 @@ int main(int argc, char *argv[]) {
                                     left,
                                     right);
 
-
-    // apply color
-//    cudaMemcpy(d_color_map, h_color_map.data(), 256 * 3 * sizeof(unsigned char), cudaMemcpyHostToDevice);
-//    setColors<<<grid, block>>>(d_steps,
-//                               d_colors,
-//                               d_color_map,
-//                               width,
-//                               height);
-
     // bring back data
     cudaMemcpy(h_colors, d_colors, width * height * 3 * sizeof(char), cudaMemcpyDeviceToHost);
 
-    cudaFree(d_coords);
-    cudaFree(d_steps);
+    // free device memory
     cudaFree(d_colors);
     cudaFree(d_color_map);
 
@@ -160,6 +128,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // free host memory
     free(h_colors);
 
     image.save_image("output.bmp");

@@ -79,9 +79,7 @@ setColors(const int *d_steps,
 }
 
 __global__ void
-combinedKernel(const float *d_coords,
-               int *d_steps,
-               const int width,
+combinedKernel(const int width,
                const int height,
                const float c_x,
                const float c_y,
@@ -96,16 +94,15 @@ combinedKernel(const float *d_coords,
     unsigned int idy = threadIdx.y + blockIdx.y * blockDim.y;
 
     if (idx < width && idy < height) {
-        unsigned int ids = idy * width + idx;
-        unsigned int idc = ids * 2;
-        float x = left + (right - left) / (float) width * idx;;
-        float y = top - (top - bottom) / (float) height * idy;
+        float x = left + (right - left) / (float) width * (float) idx;
+        float y = top - (top - bottom) / (float) height * (float) idy;
         float x_temp;
+        int steps = -1;
 
         // check if escaped
         for (int i = 0; i < iterations; i++) {
             if (x * x + y * y > 4) {
-                d_steps[ids] = i;
+                steps = i;
                 break;
             } else {
                 x_temp = x * x - y * y;
@@ -115,8 +112,7 @@ combinedKernel(const float *d_coords,
         }
 
         // set colors
-        int steps = d_steps[ids];
-        idc = ids * 3;
+        unsigned int idc = (idy * width + idx) * 3;
 
         if (steps == -1) {
             d_colors[idc] = 0;
