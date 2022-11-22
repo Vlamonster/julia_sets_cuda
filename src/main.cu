@@ -101,7 +101,6 @@ int main(int argc, char *argv[]) {
     dim3 grid((width + 32 - 1) / 32, (height + 32 - 1) / 32);
     dim3 block(32, 32);
 
-    cudaMemset(d_steps, -1, width * height * sizeof(int));
     initializeCoords<<<grid, block>>>(d_coords,
                                       width,
                                       height,
@@ -111,15 +110,14 @@ int main(int argc, char *argv[]) {
                                       right);
 
     // run main loop
-    for (int i = 0; i < iterations; i++) {
-        iterateCoordinates<<<grid, block>>>(d_coords,
-                                            d_steps,
-                                            width,
-                                            height,
-                                            c_x,
-                                            c_y,
-                                            i);
-    }
+    iterateCoordinates<<<grid, block>>>(d_coords,
+                                        d_steps,
+                                        width,
+                                        height,
+                                        c_x,
+                                        c_y,
+                                        iterations);
+
 
     // apply color
     cudaMemcpy(d_color_map, h_color_map.data(), 256 * 3 * sizeof(unsigned char), cudaMemcpyHostToDevice);

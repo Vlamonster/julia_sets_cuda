@@ -1,13 +1,13 @@
 #include "kernels.hpp"
 
 __global__ void
-iterateCoordinates(float *d_coords,
+iterateCoordinates(const float *d_coords,
                    int *d_steps,
                    const int width,
                    const int height,
                    const float c_x,
                    const float c_y,
-                   const int iteration) {
+                   const int iterations) {
     unsigned int idx = threadIdx.x + blockIdx.x * blockDim.x;
     unsigned int idy = threadIdx.y + blockIdx.y * blockDim.y;
 
@@ -16,14 +16,17 @@ iterateCoordinates(float *d_coords,
         unsigned int idc = ids * 2;
         float x = d_coords[idc];
         float y = d_coords[idc + 1];
+        float x_temp;
 
         // check if escaped
-        if (d_steps[ids] == -1) {
+        for (int i = 0; i < iterations; i++) {
             if (x * x + y * y > 4) {
-                d_steps[ids] = iteration;
+                d_steps[ids] = i;
+                return;
             } else {
-                d_coords[idc] = x * x - y * y + c_x;
-                d_coords[idc + 1] = 2 * x * y + c_y;
+                x_temp = x * x - y * y;
+                y = 2 * x * y + c_y;
+                x = x_temp + c_x;
             }
         }
     }
@@ -62,7 +65,7 @@ setColors(const int *d_steps,
 
         int steps = d_steps[ids];
 
-        if (steps == -1){
+        if (steps == -1) {
             d_colors[idc] = 0;
             d_colors[idc + 1] = 0;
             d_colors[idc + 2] = 0;

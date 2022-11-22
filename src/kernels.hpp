@@ -1,11 +1,11 @@
 __global__ void
-iterateCoordinates(float *d_coords,
+iterateCoordinates(const float *d_coords,
                    int *d_steps,
                    int width,
                    int height,
                    float c_x,
                    float c_y,
-                   int iteration);
+                   int iterations);
 
 __global__ void
 initializeCoords(float *d_coords,
